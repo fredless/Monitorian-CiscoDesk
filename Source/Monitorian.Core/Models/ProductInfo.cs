@@ -50,11 +50,6 @@ public static class ProductInfo
 	public static string CoreProduct => Assembly.GetExecutingAssembly().GetAttribute<AssemblyProductAttribute>().Product;
 
 	/// <summary>
-	/// Startup task ID
-	/// </summary>
-	public static string StartupTaskId => GetAppSettings();
-
-	/// <summary>
 	/// Project Url
 	/// </summary>
 	public static string ProjectUrl => GetAppSettings();

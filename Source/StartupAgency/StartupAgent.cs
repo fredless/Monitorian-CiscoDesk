@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using StartupAgency.Helper;
 using StartupAgency.Worker;
 
 namespace StartupAgency;
@@ -21,21 +20,17 @@ public class StartupAgent : IDisposable
 	/// Starts.
 	/// </summary>
 	/// <param name="name">Name</param>
-	/// <param name="startupTaskId">Startup task ID</param>
 	/// <param name="standardArguments">Arguments being consumed in current instance</param>
 	/// <param name="forwardingArguments">Arguments being forwarded to another instance</param>
 	/// <returns>
 	/// <para>success: True if no other instance exists and this instance successfully starts</para>
-	/// <para>response: Response from another instance if that instance exists and returns an response</para> 
+	/// <para>response: Response from another instance if that instance exists and returns an response</para>
 	/// </returns>
-	/// <remarks>Startup task ID must match that in AppxManifest.xml.</remarks>
-	public (bool success, string response) Start(string name, string startupTaskId,
+	public (bool success, string response) Start(string name,
 		IReadOnlyList<string> standardArguments, IReadOnlyList<string> forwardingArguments)
 	{
 		if (string.IsNullOrWhiteSpace(name))
 			throw new ArgumentNullException(nameof(name));
-		if (string.IsNullOrWhiteSpace(startupTaskId))
-			throw new ArgumentNullException(nameof(startupTaskId));
 
 		_holder = new PipeHolder(name, null);
 		var (created, started, response) = _holder.Create(forwardingArguments?.ToArray());
@@ -44,9 +39,7 @@ public class StartupAgent : IDisposable
 
 		IsConnectable = started;
 
-		_worker = (OsVersion.Is10Build14393OrGreater && IsPackaged)
-			? (IStartupWorker)new BridgeWorker(taskId: startupTaskId)
-			: (IStartupWorker)new RegistryWorker(name: name, path: Assembly.GetEntryAssembly().Location);
+		_worker = new RegistryWorker(name: name, path: Assembly.GetEntryAssembly().Location);
 
 		_isHideExpected = standardArguments?.Contains(HideOption) is true;
 		return (success: true, null);
@@ -89,11 +82,6 @@ public class StartupAgent : IDisposable
 	/// Whether this instance is connectable by named pipes
 	/// </summary>
 	public bool IsConnectable { get; private set; }
-
-	/// <summary>
-	/// Whether this assembly is packaged in AppX package
-	/// </summary>
-	public bool IsPackaged => PlatformInfo.IsPackaged;
 
 	/// <summary>
 	/// Delegate to asynchronously handle the arguments from another instance

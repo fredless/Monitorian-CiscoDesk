@@ -117,6 +117,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CiscoDeskEnable" xml:space="preserve">
+    <value>Enable Cisco Desk</value>
+  </data>
+  <data name="CiscoDeskHost" xml:space="preserve">
+    <value>IP address / host name</value>
+  </data>
+  <data name="CiscoDeskPassword" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="CiscoDeskSettings" xml:space="preserve">
+    <value>Cisco Desk device</value>
+  </data>
+  <data name="CiscoDeskTest" xml:space="preserve">
+    <value>Test connection</value>
+  </data>
+  <data name="CiscoDeskTestFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="CiscoDeskTestSucceeded" xml:space="preserve">
+    <value>Succeeded</value>
+  </data>
+  <data name="CiscoDeskUsername" xml:space="preserve">
+    <value>User name</value>
+  </data>
+  <data name="CiscoDeskUsesHttps" xml:space="preserve">
+    <value>Use HTTPS</value>
+  </data>
+  <data name="CiscoDeskValidatesCertificate" xml:space="preserve">
+    <value>Validate certificate</value>
+  </data>
   <data name="CopyOperation" xml:space="preserve">
     <value>Copy accumulated log</value>
   </data>
@@ -149,6 +179,9 @@
   </data>
   <data name="StatusNotControllable" xml:space="preserve">
     <value>Monitor is not controllable.</value>
+  </data>
+  <data name="StatusReasonCiscoDeskFailing" xml:space="preserve">
+    <value>Access to Cisco Desk device has been failing repeatedly.</value>
   </data>
   <data name="StatusReasonDdcFailing" xml:space="preserve">
     <value>DDC/CI has been failing repeatedly.</value>

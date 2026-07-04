@@ -37,7 +37,7 @@ public class AppKeeper
 
 		SubscribeExceptions();
 
-		var (success, response) = StartupAgent.Start(ProductInfo.Product, ProductInfo.StartupTaskId, StandardArguments, ForwardingArguments);
+		var (success, response) = StartupAgent.Start(ProductInfo.Product, StandardArguments, ForwardingArguments);
 		if (!success && (response is not null))
 		{
 			ConsoleService.WriteLine(response);

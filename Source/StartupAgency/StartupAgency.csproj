@@ -42,20 +42,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bridge\StartupTaskBroker.cs" />
     <Compile Include="Helper\OsVersion.cs" />
-    <Compile Include="Worker\BridgeWorker.cs" />
     <Compile Include="Worker\IStartupWorker.cs" />
     <Compile Include="Worker\RegistryWorker.cs" />
     <Compile Include="PipeHolder.cs" />
-    <Compile Include="PlatformInfo.cs" />
     <Compile Include="StartupAgent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.26100.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

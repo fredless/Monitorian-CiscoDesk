@@ -500,6 +500,7 @@ public class MonitorViewModel : ViewModelBase
 			DdcMonitorItem { IsPrecleared: true } => null,
 			DdcMonitorItem => Invariant.StatusNotControllable + Environment.NewLine + Invariant.StatusReasonDdcFailing,
 			UnreachableMonitorItem { IsInternal: false } => Invariant.StatusNotControllable + Environment.NewLine + Invariant.StatusReasonDdcNotEnabled,
+			CiscoDeskMonitorItem => Invariant.StatusNotControllable + Environment.NewLine + Invariant.StatusReasonCiscoDeskFailing,
 			_ => Invariant.StatusNotControllable
 		};
 	}

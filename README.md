@@ -1,9 +1,19 @@
-﻿# Monitorian
+﻿# Monitorian + Cisco Desk
 
 Monitorian is a Windows desktop tool to adjust the brightness of multiple monitors with ease.
 
+## About this Cisco Desk fork
+
+*This repository is a fork of the popular [emoacht/Monitorian](https://github.com/emoacht/Monitorian) that adds the ability to adjust the screen backlight of a Cisco RoomOS Desk device (e.g. Desk Pro) right alongside regular monitors. **In short, I got tired of having an easy way to adjust all my display brightness with the exception of my Cisco Desk Pro, which does not support HDMI DDC\CI - but it does have RoomOS xAPI, and supporting that endpoint over xAPI is what this fork is all about, and nothing else.** See the [Cisco Desk device section](#cisco-desk-device) for details.*
+
+*Differences from upstream:*
+
+ - *A Cisco RoomOS Desk device can be configured from the tray menu and shown as an additional brightness slider (disabled by default).*
+ - *The Microsoft Store version and its subscription add-on features (hot keys, command-line get/set, commands) do not apply to this fork; some related code and documentation have subsequently been trimmed. This fork will not be distributed through the Microsoft Store, and will not support the bonus subscription features the fork parent's author makes available.*
+
+---
 <img src="Images/Screenshot_main.png" alt="Screenshot" width="487.5"><br>
-(DPI: 200%)
+
 
 The user can change the brightness of monitors, including external ones, either individually or in unison. For the system with an ambient light sensor, the adjusted brightness can be shown along with configured one.
 
@@ -14,8 +24,6 @@ In addition, the user can change the adjustable range of brightness and contrast
 
 ![Screenshot](Images/Screenshot_range.png)&nbsp;
 ![Screenshot](Images/Screenshot_contrast.png)<br>
-
-https://user-images.githubusercontent.com/7205690/210137118-66cfdd6e-9847-41b3-a836-d1ff8cf73f3d.mp4
 
 Additional languages:
 
@@ -49,29 +57,11 @@ Additional languages:
  * An external monitor must be DDC/CI enabled.
 ![OSD](Images/Dell_ddcci.jpg)
 
-## Download
-
- * Microsoft Store (Windows 10 (1607) or newer):<br>
-   [Monitorian](https://www.microsoft.com/store/apps/9nw33j738bl0)<br>
-   <a href='//www.microsoft.com/store/apps/9nw33j738bl0?cid=storebadge&ocid=badge'><img src='https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png' alt='Monitorian' width='142px' height='52px'/></a>
-
- * Winget (a.k.a. [Windows Package Manager](https://docs.microsoft.com/en-us/windows/package-manager), App Installer):
-   ```
-   winget install Monitorian -s msstore
-   ```
-
- * Other:<br>
-:floppy_disk: [Installer](https://github.com/emoacht/Monitorian/releases/download/4.14.0-Installer/MonitorianInstaller3140.zip)
-
 ## Install/Uninstall
 
-If you wish to place executable files on your own, you can extract them from installer file (.msi) by the following command:
+This fork is built from source (see [Setup](#setup)). The original Monitorian can be obtained from the [upstream repository](https://github.com/emoacht/Monitorian).
 
-```
-msiexec /a [source msi file path] targetdir=[destination folder path (absolute path)] /qn
-```
-
-In such case, please note the following:
+When you place the executable files on your own, please note the following:
 
  - The settings file (and other file) will be created at: `[system drive]\Users\[user name]\AppData\Local\Monitorian\`
  - When you check [Start on sign in], a registry value will be added to: `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
@@ -83,71 +73,6 @@ In such case, please note the following:
  - The number of monitors shown at a time is up to 4.
  - In case an external monitor is not shown, read [detection of external monitors](#detection-of-external-monitors).
  - This app identifies each monitor by an unique identifier given by the OS. Even with the same PC and monitor, this identifier may vary depending on the type of connection (e.g. USB-C DisplayPort Alt mode) or the selection of connectors of the same type. Consequently, if a monitor is reconnected to the different connector, it may not be regarded as the same monitor and some functions may not work as expected.
-
-## Add-on Features
-
-Add-on features are available for Microsoft Store version on a subscription basis.
-
-### Hot keys & Shortcut keys (Add-on features)
-
-![Screenshot](Images/Screenshot_keys_en.png)
-
-All hot keys for brightness can be switched to contrast by `To contrast` hot key. It can be switched back to brightness by `To brightness` hot key.
-
-### Command-line options (Add-on features)
-
-You can use command-line options to get/set the brightness or contrast.
-
-| Actions                                | Options                                |
-|----------------------------------------|----------------------------------------|
-| Get brightness of a monitor.           | /get                                   |
-| Get brightness of a specified monitor. | /get [Device Instance ID]              |
-| Get brightness of all monitors.        | /get all                               |
-| Set brightness of a monitor.           | /set [Brightness]                      |
-| Set brightness of a specified monitor. | /set [Device Instance ID] [Brightness] |
-| Set brightness of all monitors.        | /set all [Brightness]                  |
-
-The device instance ID is an unique identifier given by the OS to each monitor. It must be enclosed in quotes. 
-
-You can switch to contrast by inserting `contrast` after `/get` or `/set` (e.g. `/get contrast all`).
-
-If this app is called with `/get` or `/set`, it will return
-
-```
-[Device Instance ID] [Monitor name] [Brightness] B
-```
-
-'B' at the end indicates brightness. In addition, '*' will be added in the case of a selected monitor. 
-
-If this app is called with `/get contrast` or `/set contrast`, it will return
-
-```
-[Device Instance ID] [Monitor name] [Contrast] C
-```
-
-'C' at the end indicates contrast. If contrast is not supported by a monitor, '-' will be shown instead.
-
-The brightness or contrast ranges from 0 to 100%. When you use `/set` option, it can be specified with the number itself (e.g. 20), increase (e.g. +10) or decrease (e.g. -10).
-
-The options can be executed consecutively (e.g. `monitorian /set 20 /set contrast 40`, up to 10 options).
-
-You can call this app by its name `Monitorian` in command prompt, bat file or desktop shortcut.
-
-For example, creating a desktop shortcut to set brightness of a monitor to 50 will be the following.
-
-![Shortcut](Images/Shortcut_set.png)
-
-From Task Scheduler, it can be performed by the path to its alias `%LOCALAPPDATA%\Microsoft\WindowsApps\Monitorian.exe`. For example, to increase brightness of all monitors by 30%, the Action will be the following:
-
-![Task Scheduler](Images/TaskScheduler_action.png)
-
-In addition, you can customize flexible and versatile commands for specific needs:
-
- - [Conditional Commands](https://github.com/emoacht/Monitorian/blob/master/docs/COMMANDS.md#conditional-commands) - To be executed when a specified condition is met
- - [Time Commands](https://github.com/emoacht/Monitorian/blob/master/docs/COMMANDS.md#time-commands) - To be executed when a specified daily due time comes
- - [Key Commands](https://github.com/emoacht/Monitorian/blob/master/docs/COMMANDS.md#key-commands) - To be executed a specified hot key is pressed
-
-The code for add-on features is not included in this repository.
 
 ## Detection of external monitors
 
@@ -171,11 +96,37 @@ This function has been tested and worked well in most cases. Therefore, if a mon
 
 If you think it is worth to report, read [reporting](#reporting) and then create an issue with logs and other relevant information.
 
+## Cisco Desk device
+
+This fork can show a brightness slider for a Cisco RoomOS Desk device and adjust its screen backlight over the network, individually or in unison with other monitors. It has been tested with a Cisco Desk Mini, Desk, Desk Pro and Desk Pro G2. Note that Desk Pro G2 requires RoomOS 26.7 or higher due to a blocking defect that existed in prior versions. 
+
+![Screenshot](Images/Screenshot_cisco-desk-control.png)<br>
+
+To configure it, right-click the tray icon to open the menu:
+
+ 1. Check `Enable Cisco Desk`.
+ 2. Under `Cisco Desk device`, enter the IP address / host name of the device as well as the user name and password of a device account.
+ 3. Tap `Test connection`. On success, the current backlight value is shown and the slider for the device appears in main window shortly after.
+
+![Screenshot](Images/Screenshot_cisco-desk-config.png)<br>
+
+Under the hood, the backlight is set with `xCommand Video Output Monitor Backlight Set` and read with `xStatus Video Output Monitor Backlight` through the device's HTTP(S) xAPI using Basic authentication.
+
+Remarks:
+
+ - HTTP(S) API access must be enabled on the device (`xConfiguration NetworkServices HTTP Mode`) and the account must have ADMIN or INTEGRATOR role.
+ - HTTPS is used by default. Certificate validation is off by default because these devices commonly present a self-signed certificate. If your device has a proper certificate, turn on `Validate certificate`.
+ - The password is stored encrypted (Windows DPAPI, current user scope) in the settings file.
+ - Showing the slider requires reading the current backlight, which in turn requires a RoomOS version that reports `xStatus Video Output Monitor Backlight` (e.g. RoomOS 26.7 on Desk Pro G2). If the value cannot be read, the slider stays hidden until the device responds to a rescan.
+ - While the slider is moved, values are sent to the device asynchronously and intermediate values may be skipped; the latest value always wins.
+ - If the brightness is changed from the device directly, Monitorian does not see this shift and will continue to reflect the prior brightness level (may fix with future enhancement).
+ - Support is only included for a single associated Cisco Desk series device.
+
 ## Development
 
 To begin with, please read [contributing guidelines](https://github.com/emoacht/Monitorian/blob/master/docs/CONTRIBUTING.md).
 
-This app is a WPF app developed and tested with Surface Pro series.
+This app is a WPF app developed and tested with Surface Pro series (upstream author). The "Cisco Desk" fork has been tested on an AMD workstation with NVIDIA gfx, as well as an HP laptop with Lunar Lake CPU\iGPU.
 
 ### Reporting
 
@@ -232,6 +183,16 @@ An alternative language can be shown by adding a Resources (.resx) file into `/S
  - VESA [Monitor Control Command Set (MCCS)](https://www.google.co.jp/search?q=VESA+Monitor+Control+Command+Set+Standard+MCCS) standard
 
 ## History
+
+Ver 4.15.0.1 - Cisco Desk
+
+ - Fork upstream 4.15 parent
+ - Add new model and UI for Cisco Desk series
+ - Modify core to call the new model 
+
+Ver 4.15 
+
+- unknown improvements, see commits
 
 Ver 4.14 2026-3-22
 
@@ -513,3 +474,6 @@ Ver 1.0 2017-2-22
 ## Developer
 
  - emoacht (emotom[atmark]pobox.com)
+
+## Attribution & Trademarks
+The stylized Cisco logo included in this repository is the property of Cisco Systems, Inc. and/or its affiliates. Cisco and the Cisco logo are trademarks or registered trademarks of Cisco Systems, Inc. in the U.S. and other countries.

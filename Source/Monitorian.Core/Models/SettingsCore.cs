@@ -143,6 +143,86 @@ public class SettingsCore : BindableBase
 	private bool _enablesIdentity = true;
 
 	/// <summary>
+	/// Whether to enable controlling Cisco RoomOS Desk device
+	/// </summary>
+	[DataMember]
+	public bool EnablesCiscoDesk
+	{
+		get => _enablesCiscoDesk;
+		set => SetProperty(ref _enablesCiscoDesk, value);
+	}
+	private bool _enablesCiscoDesk;
+
+	/// <summary>
+	/// IP address or host name of Cisco RoomOS Desk device
+	/// </summary>
+	[DataMember]
+	public string CiscoDeskHost
+	{
+		get => _ciscoDeskHost;
+		set => SetProperty(ref _ciscoDeskHost, value);
+	}
+	private string _ciscoDeskHost;
+
+	/// <summary>
+	/// User name to access Cisco RoomOS Desk device
+	/// </summary>
+	[DataMember]
+	public string CiscoDeskUsername
+	{
+		get => _ciscoDeskUsername;
+		set => SetProperty(ref _ciscoDeskUsername, value);
+	}
+	private string _ciscoDeskUsername;
+
+	/// <summary>
+	/// Password to access Cisco RoomOS Desk device
+	/// </summary>
+	/// <remarks>
+	/// The password is persisted protected by DPAPI for the current user.
+	/// </remarks>
+	public string CiscoDeskPassword
+	{
+		get => StringProtection.Unprotect(_ciscoDeskPasswordProtected);
+		set
+		{
+			var buffer = !string.IsNullOrEmpty(value) ? value : null;
+			if (string.Equals(CiscoDeskPassword, buffer, StringComparison.Ordinal))
+				return;
+
+			_ciscoDeskPasswordProtected = StringProtection.Protect(buffer);
+			OnPropertyChanged();
+		}
+	}
+	[DataMember(Name = nameof(CiscoDeskPassword))]
+	private string _ciscoDeskPasswordProtected;
+
+	/// <summary>
+	/// Whether to use HTTPS to access Cisco RoomOS Desk device
+	/// </summary>
+	public bool CiscoDeskUsesHttps
+	{
+		get => _ciscoDeskUsesHttps ?? true; // default
+		set => SetProperty(ref _ciscoDeskUsesHttps, value);
+	}
+	[DataMember(Name = nameof(CiscoDeskUsesHttps))]
+	private bool? _ciscoDeskUsesHttps;
+
+	/// <summary>
+	/// Whether to validate server certificate of Cisco RoomOS Desk device
+	/// </summary>
+	/// <remarks>
+	/// Cisco devices commonly use a self-signed certificate.
+	/// </remarks>
+	[DataMember]
+	public bool CiscoDeskValidatesCertificate
+	{
+		get => _ciscoDeskValidatesCertificate;
+		set => SetProperty(ref _ciscoDeskValidatesCertificate, value);
+	}
+	private bool _ciscoDeskValidatesCertificate;
+
+	/// <summary>
 	/// Monitor customizations by user
 	/// </summary>
 	[DataMember]

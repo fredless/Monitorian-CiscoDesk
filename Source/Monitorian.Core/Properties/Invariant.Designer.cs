@@ -61,6 +61,96 @@ namespace Monitorian.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Cisco Desk.
+        /// </summary>
+        public static string CiscoDeskEnable {
+            get {
+                return ResourceManager.GetString("CiscoDeskEnable", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to IP address / host name.
+        /// </summary>
+        public static string CiscoDeskHost {
+            get {
+                return ResourceManager.GetString("CiscoDeskHost", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string CiscoDeskPassword {
+            get {
+                return ResourceManager.GetString("CiscoDeskPassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cisco Desk device.
+        /// </summary>
+        public static string CiscoDeskSettings {
+            get {
+                return ResourceManager.GetString("CiscoDeskSettings", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Test connection.
+        /// </summary>
+        public static string CiscoDeskTest {
+            get {
+                return ResourceManager.GetString("CiscoDeskTest", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        public static string CiscoDeskTestFailed {
+            get {
+                return ResourceManager.GetString("CiscoDeskTestFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Succeeded.
+        /// </summary>
+        public static string CiscoDeskTestSucceeded {
+            get {
+                return ResourceManager.GetString("CiscoDeskTestSucceeded", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to User name.
+        /// </summary>
+        public static string CiscoDeskUsername {
+            get {
+                return ResourceManager.GetString("CiscoDeskUsername", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Use HTTPS.
+        /// </summary>
+        public static string CiscoDeskUsesHttps {
+            get {
+                return ResourceManager.GetString("CiscoDeskUsesHttps", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Validate certificate.
+        /// </summary>
+        public static string CiscoDeskValidatesCertificate {
+            get {
+                return ResourceManager.GetString("CiscoDeskValidatesCertificate", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Copy accumulated log.
         /// </summary>
         public static string CopyOperation {
@@ -159,6 +249,15 @@ namespace Monitorian.Core.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Access to Cisco Desk device has been failing repeatedly..
+        /// </summary>
+        public static string StatusReasonCiscoDeskFailing {
+            get {
+                return ResourceManager.GetString("StatusReasonCiscoDeskFailing", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to DDC/CI has been failing repeatedly..
         /// </summary>

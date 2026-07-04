@@ -1,8 +1,9 @@
-﻿## Monitorian
+﻿## Monitorian + Cisco Desk
 
 The MIT License (MIT)
 
-Copyright (c) 2017 emoacht
+Monitorian Copyright (c) 2017 emoacht
++ Cisco Desk Copyright (c) 2026 fredless
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

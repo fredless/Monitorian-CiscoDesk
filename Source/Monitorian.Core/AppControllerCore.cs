@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
+using Monitorian.Core.Helper;
 using Monitorian.Core.Models;
 using Monitorian.Core.Models.Monitor;
 using Monitorian.Core.Models.Watcher;
@@ -209,6 +211,7 @@ public class AppControllerCore
 		var window = new MenuWindow(this, pivot);
 		window.ViewModel.CloseAppRequested += (_, _) => _current.Shutdown();
 		window.MenuSectionTop.Add(new DevSection(this));
+		window.MenuSectionMiddle.Add(new CiscoDeskSection(this));
 		window.Show();
 	}
 
@@ -284,8 +287,33 @@ public class AppControllerCore
 					OperationRecorder.Disable();
 
 				break;
+
+			case nameof(Settings.EnablesCiscoDesk):
+			case nameof(Settings.CiscoDeskHost):
+			case nameof(Settings.CiscoDeskUsername):
+			case nameof(Settings.CiscoDeskPassword):
+			case nameof(Settings.CiscoDeskUsesHttps):
+			case nameof(Settings.CiscoDeskValidatesCertificate):
+				_ciscoDeskRescan ??= new Throttle(
+					TimeSpan.FromSeconds(1),
+					async () =>
+					{
+						try
+						{
+							await UpdateCiscoDeskMonitorsAsync();
+						}
+						catch (Exception ex)
+						{
+							Debug.WriteLine("Failed to update Cisco Desk monitors." + Environment.NewLine
+								+ ex);
+						}
+					});
+				await _ciscoDeskRescan.PushAsync();
+				break;
 		}
 	}
+
+	private Throttle _ciscoDeskRescan;
 
 	#region Monitors
 
@@ -353,7 +381,7 @@ public class AppControllerCore
 					var oldMonitorIndices = Enumerable.Range(0, Monitors.Count).ToList();
 					var newMonitorItems = new List<IMonitor>();
 
-					foreach (var item in await MonitorManager.EnumerateMonitorsAsync(TimeSpan.FromSeconds(12)))
+					foreach (var item in (await MonitorManager.EnumerateMonitorsAsync(TimeSpan.FromSeconds(12))).Concat(EnumerateCiscoDeskMonitors()))
 					{
 						OperationRecorder.AddGroupRecordItem("Items", item.ToString());
 
@@ -441,6 +469,101 @@ public class AppControllerCore
 
 				Interlocked.Exchange(ref _scanCount, 0);
 			}
+		}
+	}
+
+	private const string CiscoDeskDeviceInstanceIdPrefix = @"CISCODESK\";
+
+	/// <summary>
+	/// Enumerates Cisco RoomOS Desk devices configured in settings.
+	/// </summary>
+	protected virtual IEnumerable<IMonitor> EnumerateCiscoDeskMonitors()
+	{
+		if (!Settings.EnablesCiscoDesk || string.IsNullOrWhiteSpace(Settings.CiscoDeskHost))
+			yield break;
+
+		var host = Settings.CiscoDeskHost.Trim();
+		var client = new CiscoDeskClient(
+			host: host,
+			username: Settings.CiscoDeskUsername,
+			password: Settings.CiscoDeskPassword,
+			usesHttps: Settings.CiscoDeskUsesHttps,
+			validatesCertificate: Settings.CiscoDeskValidatesCertificate);
+
+		yield return new CiscoDeskMonitorItem(
+			deviceInstanceId: CiscoDeskDeviceInstanceIdPrefix + host,
+			description: $"Cisco Desk ({host})",
+			client: client);
+	}
+
+	/// <summary>
+	/// Adds, removes or replaces Cisco RoomOS Desk devices in monitors collection according to
+	/// current settings without scanning physical monitors.
+	/// </summary>
+	/// <remarks>
+	/// This method shares the count with ScanAsync method so as not to mutate monitors collection
+	/// concurrently with a scan. If a scan is in progress, this method will retry afterwards.
+	/// </remarks>
+	protected virtual async Task UpdateCiscoDeskMonitorsAsync()
+	{
+		var isEntered = false;
+		try
+		{
+			isEntered = (Interlocked.Increment(ref _scanCount) == 1);
+			if (isEntered)
+			{
+				await Task.Run(() =>
+				{
+					var newMonitorItems = EnumerateCiscoDeskMonitors().ToList();
+
+					for (int index = Monitors.Count - 1; index >= 0; index--)
+					{
+						var oldMonitor = Monitors[index];
+						if (!oldMonitor.DeviceInstanceId.StartsWith(CiscoDeskDeviceInstanceIdPrefix, StringComparison.OrdinalIgnoreCase))
+							continue;
+
+						int newIndex = newMonitorItems.FindIndex(x => string.Equals(x.DeviceInstanceId, oldMonitor.DeviceInstanceId, StringComparison.OrdinalIgnoreCase));
+						if (newIndex >= 0)
+						{
+							oldMonitor.Replace(newMonitorItems[newIndex]);
+							newMonitorItems.RemoveAt(newIndex);
+
+							if (oldMonitor.UpdateBrightness())
+								oldMonitor.IsTarget = true;
+						}
+						else
+						{
+							DisposeMonitor(oldMonitor);
+							lock (_monitorsLock)
+							{
+								Monitors.RemoveAt(index);
+							}
+						}
+					}
+
+					foreach (var item in newMonitorItems)
+					{
+						var newMonitor = GetMonitor(item);
+						lock (_monitorsLock)
+						{
+							Monitors.Add(newMonitor);
+						}
+						if (newMonitor.UpdateBrightness())
+							newMonitor.IsTarget = true;
+					}
+				});
+			}
+		}
+		finally
+		{
+			if (isEntered)
+				Interlocked.Exchange(ref _scanCount, 0);
+		}
+
+		if (!isEntered)
+		{
+			// A scan is in progress. Retry after the throttle due time.
+			await _ciscoDeskRescan.PushAsync();
 		}
 	}
 
